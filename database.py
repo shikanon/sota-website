@@ -4,6 +4,8 @@ import records
 
 class DB:
     def __init__(self):
+        ''' 初始化数据库
+        '''
         self.init_mongo()
         self.init_record()
 
@@ -26,7 +28,8 @@ class DB:
         create_index_table = '''CREATE TABLE IF NOT EXISTS sotaindex(
             id int(4) NOT NULL AUTO_INCREMENT,
             name varchar(64) NOT NULL comment '搜索大厅呈现类别',
-            APIType int(4) NOT NULL comment '0代表模型接口, 1代表行业解决方案模型, 2 代表数据集接口',
+            TypeID int(4) NOT NULL comment '0代表模型接口, 1代表行业解决方案模型, 2 代表数据集接口',
+            APIType varchar(16) NOT NULL comment '类型名称',
             Image TEXT comment '图片路径',
             PRIMARY KEY ( `id` )
         )DEFAULT CHARSET=utf8 ;
@@ -64,8 +67,8 @@ class DB:
     
 
     def insert_sotaindex(self, records):
-        insert_sql = '''insert ignore into sotaindex(name, APIType, Image)
-        values(:name, :APIType, :Image)
+        insert_sql = '''insert ignore into sotaindex(name, APIType, TypeID, Image)
+        values(:name, :APIType, :TypeID, :Image)
         '''
         self.record_db.bulk_query(insert_sql, *records)
     

@@ -4,6 +4,7 @@ import pytest
 import datetime
 import time
 import json
+import random
 
 db = database.DB()
 db.reset()
@@ -12,22 +13,44 @@ def test_insert_api_record_data():
     api_index_records = [
         {
             "name": "基础模型",
-            "APIType": 0,
+            "APIType": "官方模型",
+            "TypeID": 0,
             "Image": "icon-concept.svg"
         },
         {
             "name": "SOTA模型",
-            "APIType": 0,
+            "APIType": "官方模型",
+            "TypeID": 0,
             "Image": "icon-concept.svg"
         },
         {
-            "name": "行业解决方案",
-            "APIType": 1,
+            "name": "工业",
+            "TypeID": 1,
+            "APIType": "行业解决方案",
             "Image": "icon-concept.svg"
         },
         {
-            "name": "数据集",
-            "APIType": 2,
+            "name": "交通",
+            "TypeID": 1,
+            "APIType": "行业解决方案",
+            "Image": "icon-concept.svg"
+        },
+        {
+            "name": "教育",
+            "TypeID": 1,
+            "APIType": "行业解决方案",
+            "Image": "icon-concept.svg"
+        },
+        {
+            "name": "公开数据集",
+            "TypeID": 2,
+            "APIType": "数据集",
+            "Image": "icon-concept.svg"
+        },
+        {
+            "name": "行业数据集",
+            "TypeID": 2,
+            "APIType": "数据集",
             "Image": "icon-concept.svg"
         }
     ]
@@ -36,10 +59,9 @@ def test_insert_api_record_data():
 
     rows = db.get_sotaindex()
     result = json.loads(rows.export('json'))
-    assert len(result) == 4
+    assert len(result) == len(api_index_records)
 
-
-    api_records = [{
+    api_record_origin = {
         "name": "坐姿识别",
         "index_id": 1,
         "APIGroup": "行为识别", # API组，属于API种类下的子类
@@ -49,16 +71,19 @@ def test_insert_api_record_data():
         "APIClassDescription": "APIClassDescription...",
         "Description": "接口描述....",
         }
-    ]
+    api_records = [api_record_origin]
+    for i in range(20):
+        api_record_copy = api_record_origin.copy()
+        api_record_copy["name"] = "骨架识别%s"%(i)
+        api_record_copy["APIGroup"] = "行为识别%s"%(random.randint(0,i))
+        api_record_copy["APIClass"] = "图像识别%s"%(i)
+        api_record_copy["index_id"] = random.randint(1,4)
+        api_records.append(api_record_copy)
 
     db.insert_api(api_records)
     rows = db.search_api_from_sotaindex(1)
     result = json.loads(rows.export('json'))
-    assert len(result) == 1
-    rows = db.search_api_from_sotaindex(2)
-    print(rows.all())
-    print(len(rows.all()))
-
+    assert len(result) == len([r for r in api_records if r["index_id"]==1])
 
 
 test_insert_api_record_data()
@@ -130,9 +155,19 @@ def test_mongo_db():
         }
     }
 
+    data_copy = data_class.copy()
+    data_copy2 = data_class.copy()
+    data_copy["name"] = "坐姿识别v2"
+    data_copy["version"] = "v2"
+    data_copy2["name"] = "坐姿识别v3"
+    data_copy2["version"] = "v3"
+
     
     db.api_col.insert_one(data_class)
-    result = db.api_col.find_one({"SDKName": "坐姿识别"})
+    db.api_col.insert_many([data_copy, data_copy2])
+    result = db.api_col.find({"SDKName": "坐姿识别"})
+    assert len([r for r in result])==3
+    result = db.api_col.find_one({"name": "坐姿识别v1"})
     assert result == data_class
 
 test_mongo_db()
