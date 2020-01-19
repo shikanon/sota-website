@@ -93,16 +93,14 @@ async def getAPIGroup(APIGroup: str=None, SDKName: str=None):
 
     通过API Group(或者SDK名称) 获取每个具体的open API/SDK用例。
     """
-    if APIGroup == None or SDKName == None:
+    if APIGroup == None and SDKName == None:
         return JSONResponse(status_code=422, content={"message": "不能两个参数同时为空"})
     checker = Checker(str)
-    ok, message = checker.check(APIGroup)
-    if not ok:
-        return  JSONResponse(status_code=422, content={"message": message})
-    ok, message = checker.check(SDKName)
-    if not ok:
-        return  JSONResponse(status_code=422, content={"message": message})
+
     if APIGroup != None:
+        ok, message = checker.check(APIGroup)
+        if not ok:
+            return  JSONResponse(status_code=422, content={"message": message})
         resp = db.api_col.find({"APIGroup": APIGroup})
         result = list()
         for r in resp:
@@ -110,6 +108,9 @@ async def getAPIGroup(APIGroup: str=None, SDKName: str=None):
             print(r)
             result.append(r)
     if SDKName != None:
+        ok, message = checker.check(SDKName)
+        if not ok:
+            return  JSONResponse(status_code=422, content={"message": message})
         resp = db.api_col.find_one({"SDKName": SDKName})
         resp["_id"] = str(resp["_id"])
     return result
