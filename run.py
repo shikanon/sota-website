@@ -105,13 +105,14 @@ async def getAPIGroup(APIGroup: str=None, SDKName: str=None):
         result = list()
         for r in resp:
             r["_id"] = str(r["_id"])
-            print(r)
             result.append(r)
+        return result
     if SDKName != None:
         ok, message = checker.check(SDKName)
         if not ok:
             return  JSONResponse(status_code=422, content={"message": message})
         resp = db.api_col.find_one({"SDKName": SDKName})
         resp["_id"] = str(resp["_id"])
+        result = resp
     return result
 
