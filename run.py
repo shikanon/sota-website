@@ -38,7 +38,7 @@ async def getAPIIndex():
     query_data = json.loads(rows.export('json'))
     result = defaultdict(list)
     for q in query_data:
-        result[q["APIType"]].append(q)
+        result[q["TypeID"]].append(q)
     return result
 
 
