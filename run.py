@@ -93,7 +93,7 @@ async def getAPIGroup(APIGroup: str=None, SDKName: str=None):
 
     通过API Group(或者SDK名称) 获取每个具体的open API/SDK用例。
     """
-    if APIGroup == None or SDKName == None:
+    if APIGroup == None and SDKName == None:
         return JSONResponse(status_code=422, content={"message": "不能两个参数同时为空"})
     checker = Checker(str)
     ok, message = checker.check(APIGroup)
