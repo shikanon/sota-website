@@ -125,6 +125,16 @@ def test_mongo_db():
                     }
                 ]
             },
+            "Description": "商品识别",
+            "RequestQueries": {
+                "RequestParam": []
+            },
+            "PathParameters": {
+                "PathParameter": []
+            },
+            "ErrorCodeSamples": {
+                "ErrorCodeSample": []
+            },
             "HttpProtocol": "HTTP,HTTPS",
             "ResultDescriptions": {
                 "ResultDescription": []
